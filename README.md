@@ -1,6 +1,6 @@
 # `getopt(3)`-like option parsing for Lua
 
-Simple, conventional argument parsing with a friendly licence. For Lua
+Simple, conventional argument parsing with a friendly license. For Lua
 5.1 and later. See the source file header for full documentation.
 
 ## Example usage
