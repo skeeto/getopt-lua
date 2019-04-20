@@ -7,12 +7,14 @@
 -- closure returns the next (option, optarg). For unknown options, it
 -- returns ('?', option). When a required optarg is missing, it returns
 -- (':', option). It's reasonable to continue parsing after errors.
+-- Returns nil when done.
 --
 -- The optstring follows the same format as POSIX getopt(3). However,
 -- this function will never print output on its own.
 --
 -- Non-option arguments are accumulated, in order, in the optional
--- "nonoptions" table.
+-- "nonoptions" table. If a "--" argument is encountered, appends the
+-- remaining arguments to the nonoptions table and returns nil.
 --
 -- The input argv table is left unmodified.
 function getopt(argv, optstring, nonoptions)
@@ -22,7 +24,12 @@ function getopt(argv, optstring, nonoptions)
     return function()
         while true do
             local arg = argv[optind]
-            if arg == nil or arg == '--' then
+            if arg == nil then
+                return nil
+            elseif arg == '--' then
+                for i = optind + 1, #argv do
+                    table.insert(nonoptions, argv[i])
+                end
                 return nil
             elseif arg:sub(1, 1) == '-' then
                 local opt = arg:sub(optpos, optpos)
@@ -79,7 +86,7 @@ function check(name, argv, optstring, expect)
         table.insert(actual, {opt, arg})
     end
     if #expect ~= #actual then
-        return false
+        return fail(name, 'differing option lengths')
     elseif #nonoptions ~= #expect.nonoptions then
         return fail(name, 'differing nonoption lengths')
     else
@@ -141,4 +148,11 @@ check('no-options', {'foo', 'bar', 'baz'}, 'abcdef', {
 check('empty-args', {'', '-a', '', ''}, 'a:', {
     {'a', ''},
     nonoptions = {'', ''}
+})
+
+check('dash-dash', {'-a', '-b', '--', '-c', '--', '-a', '-x'}, 'ab:c', {
+    {'a', nil},
+    {'b', '--'},
+    {'c', nil},
+    nonoptions = {'-a', '-x'}
 })
