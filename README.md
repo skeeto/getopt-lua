@@ -6,6 +6,8 @@ Simple, conventional argument parsing with a friendly license. For Lua
 ## Example usage
 
 ```lua
+getopt = require('getopt')
+
 local append = false
 local binary = false
 local color = 'white'
@@ -33,7 +35,7 @@ end
 
 if #nonoptions == 1 then
     infile = io.open(nonoptions[1], 'r')
-elseif #nonoptions > 1
+elseif #nonoptions > 1 then
     print('error: wrong number of arguments: ' .. #nonoptions)
     os.exit(1)
 end
@@ -43,4 +45,4 @@ end
 
 ## Run the tests
 
-    $ lua getopt.lua
+    $ lua tests.lua
