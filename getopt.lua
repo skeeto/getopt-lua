@@ -17,7 +17,7 @@
 -- remaining arguments to the nonoptions table and returns nil.
 --
 -- The input argv table is left unmodified.
-function getopt(argv, optstring, nonoptions)
+local function getopt(argv, optstring, nonoptions)
     local optind = 1
     local optpos = 2
     nonoptions = nonoptions or {}
